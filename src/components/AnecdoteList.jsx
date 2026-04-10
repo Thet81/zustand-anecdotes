@@ -2,6 +2,9 @@
 import {useAnecdotes,useAnecdoteActions} from '../store'
 
 const AnecdoteList = ()=> {
+	const margin = {
+		marginBottom : 10
+	}
 	const anecdotes = useAnecdotes()
 	const {voteFor} = useAnecdoteActions()
 	const sortedAnecdotes = anecdotes.toSorted((a,b)=> (b.votes - a.votes))
@@ -11,7 +14,7 @@ const AnecdoteList = ()=> {
 	return (
 		<div>
 			{sortedAnecdotes.map(anecdote => (
-		        <div key={anecdote.id}>
+		        <div key={anecdote.id} style={margin}>
 		          <div>{anecdote.content}</div>
 		          <div>
 		            has {anecdote.votes}

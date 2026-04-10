@@ -1,5 +1,6 @@
 
 import { create } from 'zustand'
+import anecdoteService from './services/anecdotes'
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -18,13 +19,37 @@ const asObject = anecdote => ({
   votes: 0
 })
 
-const useAnecdoteStore = create((set) => ({
-  anecdotes: anecdotesAtStart.map(asObject),
+const useAnecdoteStore = create((set,get) => ({
+  anecdotes: [],
+  filter : '',
   actions: {
-    voteFor : id => set(state => ({anecdotes : state.anecdotes.map(anecdote => anecdote.id === id ? {...anecdote, votes : anecdote.votes + 1} : anecdote)})),
-    addAnecdote : content => set(state => ({anecdotes : state.anecdotes.concat(asObject(content))}))
+    // voteFor : id => set(state => ({anecdotes : state.anecdotes.map(anecdote => anecdote.id === id ? {...anecdote, votes : anecdote.votes + 1} : anecdote)})),
+    voteFor : async id => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+      const updatedAnecdote = {...anecdote, votes : anecdote.votes + 1}
+      const newAnecdote = await anecdoteService.update(id,updatedAnecdote)
+      set(state => ({anecdotes : state.anecdotes.map(a => a.id === id ? newAnecdote : a)}))
+    },
+    addAnecdote : async content => {
+      const newAnecdote = await anecdoteService.createNew()
+      set(state => ({anecdotes : state.anecdotes.concat(newAnecdote)}))
+    },
+    setFilter : value => set(()=> ({filter : value})),
+    initialize : async ()=> {
+      const anecdotes = await anecdoteService.getAll()
+      set(()=> ({anecdotes}))
+    }
   },
 }))
 
-export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
+// export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
+// export const useFilter = ()=> useAnecdoteStore(state=> state.filter)
+export const useAnecdotes = ()=> {
+  const anecdotes = useAnecdoteStore(state => state.anecdotes)
+  const filter = useAnecdoteStore(state => state.filter)
+  if (!filter){
+    return anecdotes
+  }
+  return anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+}
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
