@@ -22,6 +22,7 @@ const asObject = anecdote => ({
 const useAnecdoteStore = create((set,get) => ({
   anecdotes: [],
   filter : '',
+  notification : '',
   actions: {
     // voteFor : id => set(state => ({anecdotes : state.anecdotes.map(anecdote => anecdote.id === id ? {...anecdote, votes : anecdote.votes + 1} : anecdote)})),
     voteFor : async id => {
@@ -31,14 +32,17 @@ const useAnecdoteStore = create((set,get) => ({
       set(state => ({anecdotes : state.anecdotes.map(a => a.id === id ? newAnecdote : a)}))
     },
     addAnecdote : async content => {
-      const newAnecdote = await anecdoteService.createNew()
+      const newAnecdote = await anecdoteService.createNew(content)
       set(state => ({anecdotes : state.anecdotes.concat(newAnecdote)}))
     },
     setFilter : value => set(()=> ({filter : value})),
     initialize : async ()=> {
       const anecdotes = await anecdoteService.getAll()
       set(()=> ({anecdotes}))
-    }
+    },
+    setNoti : value => set(()=> ({notification : value})),
+    clearNoti : ()=> set(()=> ({notification : null})),
+    deleteZeroVotes : ()=> set(state => ({anecdotes : state.anecdotes.filter(anecdote => anecdote.votes > 0)}))
   },
 }))
 
@@ -53,3 +57,10 @@ export const useAnecdotes = ()=> {
   return anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
 }
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+export const useNotification = ()=> {
+  const notification = useAnecdoteStore(state => state.notification)
+  if (!notification) {
+    return null
+  }
+  return notification
+}

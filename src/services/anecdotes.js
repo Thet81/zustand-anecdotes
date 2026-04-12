@@ -15,7 +15,7 @@ const createNew = async content => {
 		headers : {
 			'Content-type' : 'application/josn'
 		},
-		body : JSON.stringify({content})
+		body : JSON.stringify({content, votes : 0})
 	})
 
 	if (!response.ok) {

@@ -1,15 +1,25 @@
 // AnecdoteList.jsx
-import {useAnecdotes,useAnecdoteActions} from '../store'
+import {useAnecdotes,useAnecdoteActions,} from '../store'
 
 const AnecdoteList = ()=> {
 	const margin = {
 		marginBottom : 10
 	}
 	const anecdotes = useAnecdotes()
-	const {voteFor} = useAnecdoteActions()
+	const {voteFor,setNoti, clearNoti,deleteZeroVotes} = useAnecdoteActions()
 	const sortedAnecdotes = anecdotes.toSorted((a,b)=> (b.votes - a.votes))
+	
 	const vote = id => {
 		voteFor(id)
+		const anecdote = anecdotes.find(a => a.id === id)
+		setNoti(`You have voted "${anecdote.content}"`)
+		setTimeout(()=> {
+			clearNoti()
+		},5000)
+	}
+
+	const handleDeleteZeroVote = ()=> {
+		deleteZeroVotes()
 	}
 	return (
 		<div>
@@ -22,6 +32,9 @@ const AnecdoteList = ()=> {
 		          </div>
 		        </div>
 	      	))}
+	      	<div>
+	      		<button onClick={handleDeleteZeroVote}>Delete zero vote</button>
+	      	</div>
 		</div>
 	)
 }
