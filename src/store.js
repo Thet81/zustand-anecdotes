@@ -64,3 +64,5 @@ export const useNotification = ()=> {
   }
   return notification
 }
+
+export default useAnecdoteStore;
