@@ -7,7 +7,7 @@ const AnecdoteList = ()=> {
 	}
 	const anecdotes = useAnecdotes()
 	const {voteFor,setNoti, clearNoti,deleteZeroVotes} = useAnecdoteActions()
-	const sortedAnecdotes = anecdotes.toSorted((a,b)=> (b.votes - a.votes))
+	// const sortedAnecdotes = anecdotes.toSorted((a,b)=> (b.votes - a.votes))
 	
 	const vote = id => {
 		voteFor(id)

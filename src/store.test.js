@@ -20,6 +20,7 @@ beforeEach(()=> {
 })
 
 describe('use anecdotes action',()=> {
+
 	it ('initialize loads anecdotes from the server',async ()=> {
 		const mockAnecdotes = [{id : 1 , content : 'some anecdote for testing', votes : 0}]
 		anecdoteService.getAll.mockResolvedValue(mockAnecdotes)
@@ -32,6 +33,24 @@ describe('use anecdotes action',()=> {
 
 		const {result : anecdotesValue} = renderHook(()=> useAnecdotes())
 		expect(anecdotesValue.current).toEqual(mockAnecdotes)
+	})
+
+	it('the anecdotes in the store are sorted by votes' ,async()=> {
+		const mockAnecdotes = [
+			{id : 1 , content : 'some anecdote for testing', votes : 0},
+			{id : 2, content : 'top anecdote' , votes : 100}
+		]
+		anecdoteService.getAll.mockResolvedValue(mockAnecdotes)
+		const {result} = renderHook(()=> useAnecdoteActions())
+
+		await act(async()=> {
+			await result.current.initialize()
+		})
+
+		const {result : anecdotesValue} = renderHook(()=> useAnecdotes())
+
+		expect(anecdotesValue.current[0]).toBe(mockAnecdotes[1])
+		
 	})
 })
 // beforeEach(()=> {

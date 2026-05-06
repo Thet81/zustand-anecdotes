@@ -49,7 +49,7 @@ const useAnecdoteStore = create((set,get) => ({
 // export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes)
 // export const useFilter = ()=> useAnecdoteStore(state=> state.filter)
 export const useAnecdotes = ()=> {
-  const anecdotes = useAnecdoteStore(state => state.anecdotes)
+  const anecdotes = useAnecdoteStore(state => state.anecdotes).toSorted((a,b)=> (b.votes - a.votes))
   const filter = useAnecdoteStore(state => state.filter)
   if (!filter){
     return anecdotes
